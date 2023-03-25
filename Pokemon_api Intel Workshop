@@ -1,0 +1,46 @@
+import requests
+import numpy as np
+import plotly.graph_objs as go
+
+# Retrieve data from the PokéAPI
+response = requests.get("https://pokeapi.co/api/v2/pokemon/")
+data = response.json()["results"]
+
+# Extract data into NumPy arrays
+names = np.array([d["name"] for d in data])
+ids = np.array([int(d["url"].split("/")[-2]) for d in data])
+
+# Create scatter plot with Plotly
+fig = go.Figure()
+fig.add_trace(go.Scatter(
+    x=ids,
+    y=np.random.rand(len(ids)),
+    mode="markers",
+    text=names,
+    marker=dict(
+        size=20,
+        color=ids,
+        colorscale="Viridis",
+        showscale=True
+    )
+))
+
+# Add user interaction with Plotly
+fig.update_layout(
+    title="Random Values v/s. Pokémon IDs",
+    yaxis_title="My Pokémon ID",
+    xaxis_title="Some Random Value",
+    hovermode="closest",
+    updatemenus=[dict(
+        type="buttons",
+        direction="left",
+        buttons=[dict(
+            label="Toggle Colorscale",
+            method="update",
+            args=[{"marker.colorscale": ["Viridis", "Red"]}]
+        )]
+    )]
+)
+
+# Display the plot
+fig.show()
